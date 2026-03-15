@@ -1,18 +1,12 @@
 const express = require('express')
+const cors = require('cors')
 const morgan = require('morgan')
-const path = require('path')
-const cors = require('cors')  
 
 const app = express()
 
-app.use(cors())   
+app.use(cors())
 app.use(express.json())
-const path = require('path')
 app.use(morgan('tiny'))
-
-app.set('json spaces', 2)
-
-app.use(express.static('dist'))
 
 let persons = [
   { id: '1', name: 'Arto Hellas', number: '040-123456' },
@@ -21,30 +15,21 @@ let persons = [
   { id: '4', name: 'Mary Poppendieck', number: '39-23-6423122' }
 ]
 
-const generateId = () => {
-  return Math.floor(Math.random() * 1000000).toString()
-}
+const generateId = () => Math.floor(Math.random() * 1000000).toString()
 
-/* GET all persons */
 app.get('/api/persons', (req, res) => {
   res.json(persons)
 })
 
-/* Info page */
 app.get('/info', (req, res) => {
-  const requestTime = new Date()
-  const peopleCount = persons.length
-
   res.send(`
-    <p>Phonebook has info for ${peopleCount} people</p>
-    <p>${requestTime}</p>
+    <p>Phonebook has info for ${persons.length} people</p>
+    <p>${new Date()}</p>
   `)
 })
 
-/* GET single person */
 app.get('/api/persons/:id', (req, res) => {
-  const id = req.params.id
-  const person = persons.find(p => p.id === id)
+  const person = persons.find(p => p.id === req.params.id)
 
   if (person) {
     res.json(person)
@@ -53,30 +38,22 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
-/* DELETE person */
 app.delete('/api/persons/:id', (req, res) => {
-  const id = req.params.id
-  persons = persons.filter(person => person.id !== id)
-
+  persons = persons.filter(p => p.id !== req.params.id)
   res.status(204).end()
 })
 
-/* POST new person */
 app.post('/api/persons', (req, res) => {
   const body = req.body
 
   if (!body.name || !body.number) {
-    return res.status(400).json({
-      error: 'name or number missing'
-    })
+    return res.status(400).json({ error: 'name or number missing' })
   }
 
-  const nameExists = persons.some(person => person.name === body.name)
+  const nameExists = persons.some(p => p.name === body.name)
 
   if (nameExists) {
-    return res.status(400).json({
-      error: 'name must be unique'
-    })
+    return res.status(400).json({ error: 'name must be unique' })
   }
 
   const person = {
@@ -90,11 +67,8 @@ app.post('/api/persons', (req, res) => {
   res.json(person)
 })
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
-})
-
 const PORT = process.env.PORT || 3001
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

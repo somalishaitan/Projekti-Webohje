@@ -64,11 +64,6 @@ app.post('/api/persons', (req, res) => {
   res.json(person)
 })
 
-/* Serve React frontend */
-app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/dist/index.html')
-})
-
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {

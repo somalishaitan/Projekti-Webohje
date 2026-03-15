@@ -1,11 +1,13 @@
 const express = require('express')
 const morgan = require('morgan')
+const path = require('path')
 const cors = require('cors')  
 
 const app = express()
 
 app.use(cors())   
 app.use(express.json())
+const path = require('path')
 app.use(morgan('tiny'))
 
 app.set('json spaces', 2)
@@ -84,6 +86,10 @@ app.post('/api/persons', (req, res) => {
   persons = persons.concat(person)
 
   res.json(person)
+})
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
 const PORT = process.env.PORT || 3001

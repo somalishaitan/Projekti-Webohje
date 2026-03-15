@@ -33,11 +33,8 @@ app.get('/info', (req, res) => {
 app.get('/api/persons/:id', (req, res) => {
   const person = persons.find(p => p.id === req.params.id)
 
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  if (person) res.json(person)
+  else res.status(404).end()
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -52,9 +49,7 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: 'name or number missing' })
   }
 
-  const nameExists = persons.some(p => p.name === body.name)
-
-  if (nameExists) {
+  if (persons.some(p => p.name === body.name)) {
     return res.status(400).json({ error: 'name must be unique' })
   }
 
@@ -67,6 +62,11 @@ app.post('/api/persons', (req, res) => {
   persons = persons.concat(person)
 
   res.json(person)
+})
+
+/* Serve React frontend */
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/dist/index.html')
 })
 
 const PORT = process.env.PORT || 3001
